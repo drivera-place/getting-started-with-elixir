@@ -4,16 +4,16 @@ defmodule Sender do
   """
 
   @doc """
-  Hello world.
+  Send email.
 
   ## Examples
 
-      iex> Sender.hello()
-      :world
+      iex> Sender.send_email("test@example.com")
+      :ok
 
   """
   def send_email(email) do
-    Process.sleep(3000)
+    Process.sleep(30_000)
     IO.puts("Email to #{email} sent")
     {:ok, "email_sent"}
   end
