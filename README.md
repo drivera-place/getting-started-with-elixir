@@ -15,5 +15,5 @@ iex
 or
 
 ```bash
-mix -S iex
+iex -S mix
 ```

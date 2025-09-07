@@ -1,4 +1,4 @@
-defmodule TeltonikaServer do
+defmodule Broker do
   use GenServer
 
   @port 5000
@@ -66,5 +66,9 @@ defmodule TeltonikaServer do
     ack = Base.decode16!("00")
     :gen_tcp.send(socket, ack)
     :ok
+  end
+
+  def shutdown do
+    GenServer.stop(__MODULE__)
   end
 end
