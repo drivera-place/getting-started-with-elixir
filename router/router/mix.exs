@@ -3,7 +3,7 @@ defmodule Router.MixProject do
 
   def project do
     [
-      app: :teltonika_server,
+      app: :onnodo_broker,
       version: "0.1.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
@@ -14,7 +14,7 @@ defmodule Router.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {TeltonikaServer.Application, []},
+      mod: {OnNodoBroker.Application, []},
       extra_applications: [:logger]
     ]
   end

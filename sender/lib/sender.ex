@@ -6,6 +6,18 @@ defmodule Sender do
   @port 5000
   @host "localhost"
 
+  def connect2(message) do
+    {:ok, socket} =
+      :gen_tcp.connect(~c"localhost", @port, [:binary, active: false])
+
+    :ok = :gen_tcp.send(socket, message)
+    {:ok, data} = :gen_tcp.recv(socket, 0, 500)
+
+    IO.puts("Received data: #{inspect(data)}")
+
+    :gen_tcp.close(socket)
+  end
+
   def connect(hex_string) do
     {:ok, socket} = :gen_tcp.connect(String.to_charlist(@host), @port, [:binary, active: false])
     data = Base.decode16!(hex_string)

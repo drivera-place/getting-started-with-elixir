@@ -1,74 +1,36 @@
 defmodule BrokerTest do
   use ExUnit.Case, async: true
-  #alias IEx.Broker
-  #doctest Router
 
-  # Este módulo será el Supervisor para nuestro servidor TCP durante la prueba
-  defmodule TestSupervisor do
-    use Supervisor
+  @port 5000
 
-    def start_link(_opts) do
-      Supervisor.start_link(__MODULE__, [])
-    end
+  #doctest Broker.Acceptor
 
-    @impl true
-    def init([]) do
-      # Aquí es donde el servidor TCP del otro proyecto se inicia
-      # Deberás reemplazar `TcpServer.Server` con el nombre real de tu módulo de servidor
-      children = [
-        %{
-          id: TeltonikaServer,
-          start: {TeltonikaServer, :start_link, []}
-        }
-      ]
-
-      Supervisor.init(children, strategy: :one_for_one)
-    end
-  end
-
-  # Usamos un setup_all para iniciar el supervisor una sola vez para todos los tests del módulo
-  # Este setup_all correrá de manera asíncrona gracias al `async: true`
+  # We use a setup_all to start the supervisor only once for all tests in the module
+  # This setup_all will run asynchronously thanks to `async: true`
   setup_all do
-    # Iniciamos el supervisor para el servidor TCP. El pid se pasa a los tests
-    {:ok, pid} = Supervisor.start_child(TestSupervisor, nil)
 
-    # Esto es crucial para que el supervisor se apague cuando terminen los tests
+    Supervisor.start_child(Broker.TCPAcceptor.Supervisor, {Broker.TCPAcceptor, port: @port})
+
+    # This is crucial so that the supervisor shuts down when the tests finish
     on_exit(fn ->
-      Supervisor.stop(pid)
+      Supervisor.stop(Broker.TCPAcceptor.Supervisor)
       :ok
     end)
-
-    # Devolvemos el pid del supervisor en el contexto para poder usarlo en los tests
-    %{supervisor_pid: pid}
   end
 
-
-  test "Testing start and listen on port" do
+  test "Given a listening broker when client sends a codec id then report data then server responses ok" do
 
     # Arrange
+    {:ok, socket} = :gen_tcp.connect(~c'localhost', @port, [:binary, active: false])
 
     # Act
-    {:ok, socket} = :gen_tcp.connect('localhost', 4000, [:binary, active: false])
-    :gen_tcp.send(socket, "Hello, server!")
-    expected_result = :gen_tcp.recv(socket, 0)
+    :gen_tcp.send(socket, "Codec ID\n")
+    expected_result = :gen_tcp.recv(socket, 0, 500)
+    :gen_tcp.send(socket, "Report\n")
 
     # Assert
-    assert expected_result == {:ok, _socket}
+    assert {:ok, _packet} = expected_result
 
-    #task = Task.async(fn -> expected_result = Broker.init() end)
-
-    # case Task.yield(task, 500) || Task.shutdown(task) do
-
-    #   {:ok, result} -> expected_result = result
-    #   assert expected_result == {:ok, _socket}
-
-    #   #{:ok, result} -> expected_result = result
-    #   #nil -> expected_result = {:error, :timeout}
-    # end
-
-    # IO.puts("Broker started with PID: #{inspect(pid)}")
-    # :timer.sleep(300)
-
-
+    :gen_tcp.close(socket)
   end
 end
