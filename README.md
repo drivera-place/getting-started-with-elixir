@@ -1,38 +1,13 @@
-# First steps with Elixir
+# OnNodo IoT Broker
 
-This repo contains snippets around getting started with Elixir, implementing basic concepts and features of the language and advantages of Erlang VM.
+This repo contains OnNodo's IoT Broker project and vendors device-report AVL protocols.
 
-## Getting Started
+## Setup
 
-To get started with Elixir, you need to have Elixir installed on your machine. You can follow the official installation guide [here](https://elixir-lang.org/install.html).
+Before starting, please follow the [Setup Guide for Elixir environment](SETUP.md) to set up your Elixir environment.
 
-Once you have Elixir installed, you can start an interactive shell (IEx) by running the following command in your terminal:
+## Projects
 
-```bash
-iex
-```
+- Broker project is located in the `broker` directory and is the main server implementation, more information can be found in the [README.md](./broker/README.md) file inside the `broker` directory.
 
-or
-
-```bash
-iex -S mix
-```
-
-To start an Elixir project, you can use the Mix build tool. Create a new project by running:
-
-```bash
-mix new my_project
-cd my_project
-```
-
-Formating files can be done using:
-
-```bash
-mix format
-```
-
-To run tests, you can use the following command:
-
-```bash
-mix test
-```
+- Protocols are located in the `protocols` directory and define the various device communication protocols, more information can be found in the [README.md](./protocols/README.md) file inside the `protocols` directory.

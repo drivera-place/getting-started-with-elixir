@@ -3,6 +3,7 @@ defmodule Broker.TCPConnection do
 
   require Logger
 
+  # ToDo: Inject the protocols codecs modules to be used according withe transport protocol/port/vendor.
   @spec start_link(:gen_tcp.socket()) :: GenServer.on_start()
   def start_link(socket) do
     GenServer.start_link(__MODULE__, socket)
@@ -39,14 +40,17 @@ defmodule Broker.TCPConnection do
     Logger.info("Data processed by PID: #{inspect(self())}")
     Logger.debug("Received data: #{inspect(state.buffer)}")
 
-    # Codec ID identification would go here
+    # ToDo: Protocol, Codec ID and IMEI identification would go here
 
-    # Sending ACK back to client, only after Codec ID is identified.
+    # ToDo: Sending ACK back to client, only after Codec ID is identified.
+    # We may send NACK back for every unknown Codec ID.
+
     case :gen_tcp.send(state.socket, "ACK\n") do
       :ok ->
         %{state | buffer: <<>>}
 
-      # Here you can implement
+      # ToDo: Here would go the receiving of next report messages.
+      # then we would close the connection ending the session.
 
       {:error, reason} ->
         Logger.error("Connection error: #{inspect(reason)}")

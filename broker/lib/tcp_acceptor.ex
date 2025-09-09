@@ -3,8 +3,6 @@ defmodule Broker.TCPAcceptor do
 
   require Logger
 
-  @socket_timeout 5000
-
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(options) do
     GenServer.start_link(__MODULE__, options, name: __MODULE__)
