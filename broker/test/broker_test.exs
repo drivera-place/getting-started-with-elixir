@@ -3,12 +3,11 @@ defmodule BrokerTest do
 
   @port 5000
 
-  #doctest Broker.Acceptor
+  # doctest Broker.Acceptor
 
   # We use a setup_all to start the supervisor only once for all tests in the module
   # This setup_all will run asynchronously thanks to `async: true`
   setup_all do
-
     Supervisor.start_child(Broker.TCPAcceptor.Supervisor, {Broker.TCPAcceptor, port: @port})
 
     # This is crucial so that the supervisor shuts down when the tests finish
@@ -19,7 +18,6 @@ defmodule BrokerTest do
   end
 
   test "Given a listening broker when client sends a codec id then report data then server responses ok" do
-
     # Arrange
     {:ok, socket} = :gen_tcp.connect(~c'localhost', @port, [:binary, active: false])
 

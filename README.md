@@ -17,3 +17,22 @@ or
 ```bash
 iex -S mix
 ```
+
+To start an Elixir project, you can use the Mix build tool. Create a new project by running:
+
+```bash
+mix new my_project
+cd my_project
+```
+
+Formating files can be done using:
+
+```bash
+mix format
+```
+
+To run tests, you can use the following command:
+
+```bash
+mix test
+```

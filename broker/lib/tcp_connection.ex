@@ -43,16 +43,14 @@ defmodule Broker.TCPConnection do
 
     # Sending ACK back to client, only after Codec ID is identified.
     case :gen_tcp.send(state.socket, "ACK\n") do
-
       :ok ->
         %{state | buffer: <<>>}
-        # Here you can implement
+
+      # Here you can implement
 
       {:error, reason} ->
         Logger.error("Connection error: #{inspect(reason)}")
         state
-
     end
   end
-
 end

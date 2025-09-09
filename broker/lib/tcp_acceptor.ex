@@ -14,7 +14,8 @@ defmodule Broker.TCPAcceptor do
   def init(options) do
     port = Keyword.fetch!(options, :port)
 
-    listen_options = [ # (2)
+    # (2)
+    listen_options = [
       :binary,
       active: true,
       exit_on_close: false,
@@ -22,32 +23,38 @@ defmodule Broker.TCPAcceptor do
       backlog: 25
     ]
 
-    case :gen_tcp.listen(port, listen_options) do # (3)
+    # (3)
+    case :gen_tcp.listen(port, listen_options) do
       {:ok, listen_socket} ->
         Logger.info("Started TCP server on port #{port}")
-        send(self(), :accept) # (4)
-        {:ok, listen_socket} # (5)
+        # (4)
+        send(self(), :accept)
+        # (5)
+        {:ok, listen_socket}
 
-      {:error, reason} -> {:stop, reason}
+      {:error, reason} ->
+        {:stop, reason}
     end
   end
 
   @impl true
-  def handle_info(:accept, listen_socket) do # (6)
-    case :gen_tcp.accept(listen_socket) do # (7)
+  # (6)
+  def handle_info(:accept, listen_socket) do
+    # (7)
+    case :gen_tcp.accept(listen_socket) do
+      {:ok, socket} ->
+        # (8)
+        {:ok, pid} = Broker.TCPConnection.start_link(socket)
+        Logger.info("Accepted new connection, spawned process id: #{inspect(pid)}")
+        # (9)
+        :ok = :gen_tcp.controlling_process(socket, pid)
+        # (10)
+        send(self(), :accept)
+        {:noreply, listen_socket}
 
-    {:ok, socket} ->
-
-      {:ok, pid} = Broker.TCPConnection.start_link(socket) # (8)
-      Logger.info("Accepted new connection, spawned process id: #{inspect(pid)}")
-      :ok = :gen_tcp.controlling_process(socket, pid) # (9)
-      send(self(), :accept) # (10)
-      {:noreply, listen_socket}
-
-    {:error, reason} ->
-      Logger.error("Unable to accept connection: #{inspect(reason)}")
-      {:stop, reason, listen_socket}
+      {:error, reason} ->
+        Logger.error("Unable to accept connection: #{inspect(reason)}")
+        {:stop, reason, listen_socket}
     end
   end
-
 end

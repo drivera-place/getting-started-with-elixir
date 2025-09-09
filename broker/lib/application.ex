@@ -5,7 +5,7 @@ defmodule OnNodoBroker.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      { Broker.TCPAcceptor, port: 5000 }
+      {Broker.TCPAcceptor, port: 5000}
     ]
 
     opts = [strategy: :one_for_one, name: Broker.TCPAcceptor.Supervisor]

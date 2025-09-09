@@ -19,6 +19,7 @@ defmodule Broker do
           IO.puts("Error al iniciar el servidor: #{inspect(reason)}")
           {:stop, reason}
       end
+
     {:ok, %{}}
   end
 
@@ -32,7 +33,8 @@ defmodule Broker do
     case :gen_tcp.recv(socket, 0) do
       {:ok, data} ->
         parse_teltonika_frame(socket, data)
-        # :gen_tcp.close(socket)
+
+      # :gen_tcp.close(socket)
 
       {:error, reason} ->
         IO.puts("Error al recibir datos: #{inspect(reason)}")
@@ -44,12 +46,19 @@ defmodule Broker do
     IO.puts("Reports count: #{count}")
 
     # Solo procesamos el primer AVL record
-    <<_timestamp::unsigned-integer-size(64),  # Timestamp
-      _priority,                              # Priority
-      lat::signed-integer-size(32),           # Latitude
-      lon::signed-integer-size(32),           # Longitude
-      speed::unsigned-integer-size(16),       # Speed
-      _rest::binary>> = rest
+    # Timestamp
+    <<
+      _timestamp::unsigned-integer-size(64),
+      # Priority
+      _priority,
+      # Latitude
+      lat::signed-integer-size(32),
+      # Longitude
+      lon::signed-integer-size(32),
+      # Speed
+      speed::unsigned-integer-size(16),
+      _rest::binary
+    >> = rest
 
     latitude = lat / 10_000_000
     longitude = lon / 10_000_000
