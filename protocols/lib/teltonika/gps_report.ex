@@ -1,4 +1,4 @@
-defmodule Teltonika.TCPCodec8.Gps do
+defmodule Teltonika.Gps do
   defstruct [
     :priority,
     :timestamp,

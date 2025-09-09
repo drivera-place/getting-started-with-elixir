@@ -9,26 +9,6 @@ defmodule Teltonika.TCPCodec8 do
   """
 
   @doc """
-  Parses the received binary and returns the identified codec.
-
-  ## Example
-
-      iex> Teltonika.Codec8.parse(<<0, 0, 0, 8, 8, 1, 2, 3, 4, 5, 6, 7, 8>>)
-      {:ok, 8}
-
-  """
-
-  defstruct [
-    :preamble,
-    :data_field_length,
-    :codec_id,
-    :number_of_data1,
-    :avl_data,
-    :number_of_data2,
-    :crc16
-  ]
-
-  @doc """
   Extracts the IMEI from a binary Codec8 message where the first 2 bytes indicate the length in bytes of the IMEI, the rest of bytes is the IMEI itself.
 
   ## Example
@@ -37,7 +17,6 @@ defmodule Teltonika.TCPCodec8 do
       {:ok, "51519000"}
 
   """
-
   def read_imei(<<imei_message::binary>>) do
     Logger.debug("IMEI message: #{Base.encode16(imei_message)}")
 
@@ -88,6 +67,16 @@ defmodule Teltonika.TCPCodec8 do
     {:ok, <<0, 0>>}
   end
 
+
+  @doc """
+  Parses the received binary and returns the identified codec.
+
+  ## Example
+
+      iex> Teltonika.Codec8.parse(<<0, 0, 0, 8, 8, 1, 2, 3, 4, 5, 6, 7, 8>>)
+      {:ok, 8}
+
+  """
   def parse(<<message::binary>>) do
     Logger.debug("Report message: #{Base.encode16(message)}")
 
@@ -96,6 +85,8 @@ defmodule Teltonika.TCPCodec8 do
     >> = :binary.part(message, byte_size(message) - 2, 2)
 
     Logger.debug("CRC16: #{crc16}")
+
+    # ToDo: Work in progress: validate CRC16
 
     # Logger.debug("Message size: #{byte_size(message)} bytes")
     # payload_to_check = :binary.part(message, 7, byte_size(message) - 11)
@@ -131,7 +122,7 @@ defmodule Teltonika.TCPCodec8 do
       _rest::binary
     >> = rest
 
-    report = %Teltonika.TCPCodec8.Gps{
+    report = %Teltonika.Gps{
       timestamp: timestamp,
       priority: priority,
       latitude: lat / 10_000_000,
@@ -151,7 +142,7 @@ defmodule Teltonika.TCPCodec8 do
   def parse(_), do: {:error, "Invalid Codec8 message"}
 
   @doc """
-  Calcula el CRC-16/IBM (también conocido como CRC-16-ANSI) de un binario.
+  Calculates the CRC-16/IBM (also known as CRC-16-ANSI) of a binary.
 
   ## Ejemplo
 
